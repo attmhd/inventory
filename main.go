@@ -16,12 +16,11 @@ type User struct {
 func main() {
 
 	dsn := "host=localhost user=postgres password=postgres dbname=inventory port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	_, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	// fmt.Println("Koneksi sukses")
-	db.AutoMigrate(&User{})
 }
