@@ -1,4 +1,4 @@
-package admingd
+package barang
 
 import "gorm.io/gorm"
 

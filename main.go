@@ -1,7 +1,7 @@
 package main
 
 import (
-	"inventory-manajemen-system/admingd"
+	"inventory-manajemen-system/admin"
 	"log"
 
 	"gorm.io/driver/postgres"
@@ -17,8 +17,8 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	tstRepo := admingd.NewRepository(db)
-	user := admingd.Admgd{
+	tstRepo := admin.NewRepository(db)
+	user := admin.Admgd{
 		Id:   1,
 		Name: "Testing dlu",
 	}
