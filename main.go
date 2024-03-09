@@ -1,29 +1,20 @@
 package main
 
 import (
-	"inventory-manajemen-system/admin"
-	"log"
+	"inventory-manajemen-system/handler"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-	dsn := "host=localhost user=postgres password=postgres dbname=inventory port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// tstRepo := admin.NewRepository(db)
+	// user := admin.Admgd{
+	// 	Id:   1,
+	// 	Name: "Testing dlu",
+	// }
 
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	tstRepo := admin.NewRepository(db)
-	user := admin.Admgd{
-		Id:   1,
-		Name: "Testing dlu",
-	}
-
-	tstRepo.Save(user)
+	// tstRepo.Save(user)
 
 	//fmt.Println("Koneksi sukses")
 
@@ -34,4 +25,13 @@ func main() {
 	// 	})
 	// })
 	// r.Run() // listen and serve on 0.0.0.0:8080
+
+	r := gin.Default()
+
+	r.GET("", handler.IndexHandler)
+
+	err := r.Run()
+	if err != nil {
+		panic(err.Error())
+	}
 }
