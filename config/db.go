@@ -1,18 +1,24 @@
 package config
 
 import (
+	"fmt"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func DBConnection() *gorm.DB {
-	dsn := "host=localhost user=postgres password=postgres dbname=inventory port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+var DB *gorm.DB
+
+func DBConnection() {
+	dsn := fmt.Sprintf("host= %v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Shanghai", ENV.DB_URL, ENV.DB_Username, ENV.DB_Password, ENV.DB_Name, ENV.Port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		panic(err.Error())
+		panic("koneksi gagal")
 	}
 
-	return db
+	fmt.Println("Koneksi Berhasil")
+
+	DB = db
 
 }

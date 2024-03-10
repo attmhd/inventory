@@ -1,9 +1,9 @@
 package model
 
 type User struct {
-	Id       int
+	//Id       int
 	Username string
-	Password string
-	Email    string
-	Role     int
+	//Password string
+	Email string
+	//Role     int
 }
