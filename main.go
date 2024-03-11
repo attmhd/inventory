@@ -3,6 +3,8 @@ package main
 import (
 	"inventory-manajemen-system/config"
 	"inventory-manajemen-system/handler"
+	"inventory-manajemen-system/repository"
+	"inventory-manajemen-system/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,7 +31,12 @@ func main() {
 
 	//Load Database
 	config.LoadConfig()
-	config.DBConnection()
+	db := config.DBConnection()
+
+	//dak tau
+	userRepo := repository.NewRepository(db)
+	userService := service.NewService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
 
 	//Set up router(gin)
 	r := gin.Default()
@@ -37,7 +44,7 @@ func main() {
 
 	//handler
 	api.GET("", handler.IndexHandler)
-	api.POST("/user", handler.UserHandler)
+	api.POST("/user", userHandler.AddUser)
 
 	//start server
 	err := r.Run()

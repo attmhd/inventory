@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"inventory-manajemen-system/model"
+	"inventory-manajemen-system/entity"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +17,7 @@ func LoginHandler(ctx *gin.Context) {
 }
 
 func UserHandler(ctx *gin.Context) {
-	user := new(model.User)
+	user := new(entity.User)
 	err := ctx.Bind(user)
 	if err != nil {
 		panic(err)
