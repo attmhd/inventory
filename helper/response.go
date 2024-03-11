@@ -10,9 +10,9 @@ type ResponsWithData struct {
 }
 
 type ResponsWithoutData struct {
-	Code    int
-	Status  string
-	Message string
+	Code    int    `json:"code"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
 }
 
 func Respons(p dto.ResponsParams) any {

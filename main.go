@@ -34,8 +34,8 @@ func main() {
 	db := config.DBConnection()
 
 	//dak tau
-	userRepo := repository.NewRepository(db)
-	userService := service.NewService(userRepo)
+	userepo := repository.NewRepository(db)
+	userService := service.NewService(userepo)
 	userHandler := handler.NewUserHandler(userService)
 
 	//Set up router(gin)
@@ -45,6 +45,7 @@ func main() {
 	//handler
 	api.GET("", handler.IndexHandler)
 	api.POST("/user", userHandler.AddUser)
+	api.GET("/user", userHandler.GetUser)
 
 	//start server
 	err := r.Run()
