@@ -46,6 +46,8 @@ func main() {
 	api.GET("", handler.IndexHandler)
 	api.POST("/user", userHandler.AddUser)
 	api.GET("/user", userHandler.GetUser)
+	api.POST("/session", userHandler.Login)
+	api.POST("/emailchecker", userHandler.EmailCheck)
 
 	//start server
 	err := r.Run()

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"inventory-manajemen-system/entity"
 	"inventory-manajemen-system/repository"
 
@@ -11,6 +12,8 @@ type Service interface {
 	AddUser(input entity.UserInput) (entity.User, error)
 	GetUser() ([]entity.User, error)
 	DeleteUser(id int)
+	Login(input entity.LoginInput) (entity.User, error)
+	IsEmailAvail(input entity.CheckEmailInput) (bool, error)
 }
 
 type service struct {
@@ -66,4 +69,39 @@ func (s *service) AddUser(input entity.UserInput) (entity.User, error) {
 
 func (s *service) DeleteUser(id int) {
 	s.repository.Delete(id)
+}
+
+func (s *service) Login(input entity.LoginInput) (entity.User, error) {
+	email := input.Email
+	password := input.Password
+
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return user, err
+	}
+
+	if user.Id == 0 {
+		return user, errors.New("user not found")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return user, err
+	}
+
+	return user, nil
+
+}
+
+func (s *service) IsEmailAvail(input entity.CheckEmailInput) (bool, error) {
+	user, err := s.repository.FindByEmail(input.Email)
+	if err != nil {
+		return false, err
+	}
+
+	if user.Id != 0 {
+		return false, err
+	}
+
+	return true, nil
+
 }

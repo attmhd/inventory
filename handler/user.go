@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 type userHandler struct {
@@ -24,7 +23,7 @@ func (h *userHandler) GetUser(ctx *gin.Context) {
 	if err != nil {
 		res := helper.Respons(dto.ResponsParams{
 			StatusCode: http.StatusBadRequest,
-			Message:    "Register account has been failed",
+			Message:    "Can't get users data",
 		})
 		ctx.JSON(http.StatusBadRequest, res)
 		return
@@ -32,7 +31,7 @@ func (h *userHandler) GetUser(ctx *gin.Context) {
 
 	res := helper.Respons(dto.ResponsParams{
 		StatusCode: http.StatusCreated,
-		Message:    "Account has been added succesfully",
+		Message:    "succes",
 		Data:       result,
 	})
 
@@ -45,17 +44,17 @@ func (h *userHandler) AddUser(ctx *gin.Context) {
 
 	if err := ctx.ShouldBind(&input); err != nil {
 
-		var errors []string
+		// var errors []string
 
-		for _, e := range err.(validator.ValidationErrors) {
-			errors = append(errors, e.Error())
-		}
+		// for _, e := range err.(validator.ValidationErrors) {
+		// 	errors = append(errors, e.Error())
+		// }
 
-		errorMsg := gin.H{"error": errors}
+		// errorMsg := gin.H{"error": errors}
 
 		res := helper.Respons(dto.ResponsParams{
 			StatusCode: http.StatusUnprocessableEntity,
-			Message:    errorMsg
+			Message:    "Register account has been failed",
 		})
 		ctx.JSON(http.StatusUnprocessableEntity, res)
 		return
@@ -91,3 +90,79 @@ func (h *userHandler) AddUser(ctx *gin.Context) {
 
 // 	ctx.JSON(http.StatusOK, "ok")
 // }
+
+func (h *userHandler) Login(ctx *gin.Context) {
+	var input entity.LoginInput
+
+	if err := ctx.ShouldBind(&input); err != nil {
+
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusUnprocessableEntity,
+			Message:    "Login failed",
+		})
+		ctx.JSON(http.StatusUnprocessableEntity, res)
+		return
+	}
+
+	user, err := h.userService.Login(input)
+	if err != nil {
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Login failed",
+		})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := helper.Respons(dto.ResponsParams{
+		StatusCode: http.StatusCreated,
+		Message:    "Login",
+		Data:       user,
+	})
+
+	ctx.JSON(http.StatusOK, res)
+
+}
+
+func (h *userHandler) EmailCheck(ctx *gin.Context) {
+	var input entity.CheckEmailInput
+
+	if err := ctx.ShouldBind(&input); err != nil {
+
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Email check failed",
+		})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	isEmailAvail, err := h.userService.IsEmailAvail(input)
+	if err != nil {
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Email check failed",
+		})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	if isEmailAvail != true {
+
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Email already registered",
+			Data:       isEmailAvail,
+		})
+
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+	res := helper.Respons(dto.ResponsParams{
+		StatusCode: http.StatusCreated,
+		Message:    "Email avail",
+	})
+
+	ctx.JSON(http.StatusOK, res)
+
+}
