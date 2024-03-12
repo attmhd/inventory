@@ -9,9 +9,9 @@ import (
 type UserRepo interface {
 	Save(u entity.User) (entity.User, error)
 	FindByEmail(email string) (entity.User, error)
-	FindByID(id string) (entity.User, error)
+	FindByID(id int) (entity.User, error)
 	Get() ([]entity.User, error)
-	//Update(id int) (entity.User, error)
+	Update(user entity.User) (entity.User, error)
 	Delete(id int) (entity.User, error)
 }
 
@@ -41,7 +41,7 @@ func (r *repository) FindByEmail(email string) (entity.User, error) {
 	return user, nil
 }
 
-func (r *repository) FindByID(id string) (entity.User, error) {
+func (r *repository) FindByID(id int) (entity.User, error) {
 	var user entity.User
 	if err := r.db.Where("id = ?", id).Find(&user).Error; err != nil {
 		return user, err
@@ -58,17 +58,28 @@ func (r *repository) Save(u entity.User) (entity.User, error) {
 	return u, nil
 }
 
-// func (r *repository) Update(i entity.UserInput) (entity.User, error) {
-// 	user = new(entity.User)
+func (r *repository) Update(user entity.User) (entity.User, error) {
+	var updateUser = entity.InputUpdate{
+		Id:       user.Id,
+		Username: user.Username,
+		Password: user.Password,
+		Email:    user.Email,
+		Role:     user.Role,
+	}
 
-// }
+	if result := r.db.Model(&user).Updates(updateUser); result != nil {
+		return user, nil
+	}
+
+	return user, r.db.Error
+
+}
 
 func (r *repository) Delete(id int) (entity.User, error) {
 	user := entity.User{}
 	if result := r.db.Where("id = ?", id).Delete(&user); result != nil {
 		return user, nil
-	} else {
-		return user, r.db.Error
 	}
+	return user, r.db.Error
 
 }

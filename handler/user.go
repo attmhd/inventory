@@ -6,6 +6,7 @@ import (
 	"inventory-manajemen-system/helper"
 	"inventory-manajemen-system/service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -80,16 +81,65 @@ func (h *userHandler) AddUser(ctx *gin.Context) {
 
 }
 
-// func (h *userHandler) DeleteUser(ctx *gin.Context) {
-// 	id := ctx.Params("id")
-// 	ids, err := strconv.Atoi(id)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, nil)
-// 	}
-// 	h.userService.DeleteUser(ids)
+func (h *userHandler) UpdateUser(ctx *gin.Context) {
+	var updateReq entity.InputUpdate
 
-// 	ctx.JSON(http.StatusOK, "ok")
-// }
+	if err := ctx.ShouldBind(&updateReq); err != nil {
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusUnprocessableEntity,
+			Message:    "Update failed",
+		})
+		ctx.JSON(http.StatusUnprocessableEntity, res)
+		return
+	}
+
+	idP := ctx.Param("id")
+	id, err := strconv.Atoi(idP)
+	if err != nil {
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusUnprocessableEntity,
+			Message:    "Failed convert string to integer",
+		})
+		ctx.JSON(http.StatusUnprocessableEntity, res)
+		return
+	}
+
+	updateReq.Id = id
+
+	user, err := h.userService.UpdateUser(updateReq)
+	if err != nil {
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Update Failed",
+		})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := helper.Respons(dto.ResponsParams{
+		StatusCode: http.StatusCreated,
+		Message:    "Update Succes",
+		Data:       user,
+	})
+
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *userHandler) DeleteUser(ctx *gin.Context) {
+	id := ctx.Param("id")
+	ids, err := strconv.Atoi(id)
+	if err != nil {
+		res := helper.Respons(dto.ResponsParams{
+			StatusCode: http.StatusCreated,
+			Message:    "Update Succes",
+		})
+
+		ctx.JSON(http.StatusBadRequest, res)
+	}
+	h.userService.DeleteUser(ids)
+
+	ctx.JSON(http.StatusOK, "ok")
+}
 
 func (h *userHandler) Login(ctx *gin.Context) {
 	var input entity.LoginInput

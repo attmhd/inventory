@@ -11,6 +11,7 @@ import (
 type Service interface {
 	AddUser(input entity.UserInput) (entity.User, error)
 	GetUser() ([]entity.User, error)
+	UpdateUser(update entity.InputUpdate) (entity.User, error)
 	DeleteUser(id int)
 	Login(input entity.LoginInput) (entity.User, error)
 	IsEmailAvail(input entity.CheckEmailInput) (bool, error)
@@ -65,6 +66,23 @@ func (s *service) AddUser(input entity.UserInput) (entity.User, error) {
 	}
 
 	return newUser, nil
+}
+
+func (s *service) UpdateUser(update entity.InputUpdate) (entity.User, error) {
+	user, err := s.repository.FindByID(update.Id)
+	if err != nil {
+		return user, err
+	}
+
+	user.Username = update.Username
+
+	result, err := s.repository.Update(user)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
+
 }
 
 func (s *service) DeleteUser(id int) {

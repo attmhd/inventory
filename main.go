@@ -46,6 +46,8 @@ func main() {
 	api.GET("", handler.IndexHandler)
 	api.POST("/user", userHandler.AddUser)
 	api.GET("/user", userHandler.GetUser)
+	api.PUT("/user/:id", userHandler.UpdateUser)
+	api.DELETE("/user/:id", userHandler.DeleteUser)
 	api.POST("/session", userHandler.Login)
 	api.POST("/emailchecker", userHandler.EmailCheck)
 
